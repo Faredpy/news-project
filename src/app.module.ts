@@ -5,6 +5,8 @@ import { UserModule } from './user/user.module';
 import {SequelizeModule} from "@nestjs/sequelize";
 import {config} from 'dotenv'
 import {User} from "./user/entities/user.entity";
+import { PostModule } from './post/post.module';
+import {Post} from "./post/entities/post.entity";
 config()
 
 
@@ -17,9 +19,10 @@ config()
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User]
+      models: [User, Post]
     }),
-    UserModule
+    UserModule,
+    PostModule
   ],
   controllers: [AppController],
   providers: [AppService],
