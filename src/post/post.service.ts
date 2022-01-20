@@ -34,7 +34,8 @@ export class PostService {
     if (!update[0]){
       throw new NotFoundException('Нечего обновлять')
     }
-    return update;
+    const find = await this.postRepository.findOne({where: {id}})
+    return find ;
   }
 
   async remove(id: number) {

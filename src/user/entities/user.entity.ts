@@ -1,4 +1,5 @@
-import {Column, DataType, Model, Table} from 'sequelize-typescript';
+import {Column, DataType, HasMany, Model, Table} from 'sequelize-typescript';
+import {Comment} from "../../comment/entities/comment.entity";
 
 interface UserCreationAttrs {
     firstName: string,
@@ -30,4 +31,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
     @Column({ defaultValue: true })
     isActive: boolean;
+
+    @HasMany(() => Comment)
+    comments: Comment[]
 }

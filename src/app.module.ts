@@ -7,6 +7,8 @@ import {config} from 'dotenv'
 import {User} from "./user/entities/user.entity";
 import { PostModule } from './post/post.module';
 import {Post} from "./post/entities/post.entity";
+import { CommentModule } from './comment/comment.module';
+import {Comment} from "./comment/entities/comment.entity";
 config()
 
 
@@ -19,10 +21,11 @@ config()
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Post]
+      models: [User, Post, Comment]
     }),
     UserModule,
-    PostModule
+    PostModule,
+    CommentModule
   ],
   controllers: [AppController],
   providers: [AppService],
