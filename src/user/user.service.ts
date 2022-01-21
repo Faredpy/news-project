@@ -1,8 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import {User} from "./entities/user.entity";
 import {InjectModel} from "@nestjs/sequelize";
+import {FindOptions} from "sequelize/dist/lib/model";
 
 @Injectable()
 export class UserService {
@@ -17,9 +19,19 @@ export class UserService {
     return await this.userRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findById(id: number) {
+    return this.userRepository.findOne({where: {id}})
   }
+
+  findByCond(cond: FindOptions<User>) {
+    //console.log(cond) //{ where: { email: 'mail@mail', password: '111' }}
+    const newCond = {...cond, ...{raw: true}}
+    return this.userRepository.findOne(newCond)
+  }
+
+  // findByCond(cond: LoginUserDto) {
+  //   return this.userRepository.findOne({where: cond})
+  // }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
