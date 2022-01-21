@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import {UserService} from "../user/user.service";
 import {JwtService} from "@nestjs/jwt";
 import {User} from "../user/entities/user.entity";
 import {CreateUserDto} from "../user/dto/create-user.dto";
+import * as bcrypt from 'bcryptjs'
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UserService, private jwtService: JwtService) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findByCond({where: {email, password}});
-    if (user && user.password === password) {
+    const user = await this.usersService.findByCond({where: {email}});
+    console.log(user)
+    const hashDecoded = await bcrypt.compare(password, user.password)
+    console.log(hashDecoded)
+    if (user && hashDecoded) {
       const { password, ...result } = user;
       return result;
     }
@@ -43,7 +47,13 @@ export class AuthService {
   }
 
   async register(dto: CreateUserDto) {
-    const user = await this.usersService.create(dto);
+    const candidate = await this.usersService.findByCond({where: { email: dto.email}})
+    if (candidate) {
+      throw new HttpException('Пользователь с таким email уже существует', HttpStatus.BAD_REQUEST)
+    }
+    const hashPassword = await bcrypt.hash(dto.password, 5)
+    console.log(hashPassword)
+    const user = await this.usersService.create({...dto, password: hashPassword});
     return this.generateJwtToken({id: user.id, email: user.email})
 
   }
