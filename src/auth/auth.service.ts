@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import {UserService} from "../user/user.service";
+import {JwtService} from "@nestjs/jwt";
+import {User} from "../user/entities/user.entity";
+import {CreateUserDto} from "../user/dto/create-user.dto";
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UserService) {}
+  constructor(private usersService: UserService, private jwtService: JwtService) {}
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByCond({where: {email, password}});
@@ -24,4 +25,26 @@ export class AuthService {
   //   }
   //   return null;
   // }
+
+  generateJwtToken(data: { id: number, email: string }) {
+    const payload = { email: data.email, sub: data.id };
+    return {token: this.jwtService.sign(payload)}
+  }
+
+  async login(user: User) {
+    console.log(user)
+    // const { password, ...userData} = user; +временно добавим юзера
+    // const payload = { email: user.email, sub: user.id };
+    // return {
+    //   // ...userData,
+    //   access_token: this.jwtService.sign(payload),
+    // };
+    return this.generateJwtToken({id: user.id, email: user.email})
+  }
+
+  async register(dto: CreateUserDto) {
+    const user = await this.usersService.create(dto);
+    return this.generateJwtToken({id: user.id, email: user.email})
+
+  }
 }

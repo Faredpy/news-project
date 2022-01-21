@@ -19,14 +19,15 @@ export class UserService {
     return await this.userRepository.findAll();
   }
 
-  findById(id: number) {
-    return this.userRepository.findOne({where: {id}})
+  async findById(id: number) {
+    return await this.userRepository.findOne({where: {id}})
   }
 
-  findByCond(cond: FindOptions<User>) {
+  async findByCond(cond: FindOptions<User>) {
     //console.log(cond) //{ where: { email: 'mail@mail', password: '111' }}
     const newCond = {...cond, ...{raw: true}}
-    return this.userRepository.findOne(newCond)
+    const user = await this.userRepository.findOne(newCond);
+    return user;
   }
 
   // findByCond(cond: LoginUserDto) {
